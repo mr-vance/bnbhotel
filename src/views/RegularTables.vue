@@ -74,7 +74,6 @@
 </template>
 <script>
 import LightTable from "./Tables/RegularTables/LightTable";
-import DarkTable from "./Tables/RegularTables/DarkTable";
 import api from "@/api";
 
 export default {

@@ -16,7 +16,7 @@ const routes = [
       {
         path: '/clients',
         name: 'clients',
-        component: () => import(/* webpackChunkName: "demo" */ '../views/RegularTables.vue')
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Clients.vue')
       },
       {
         path: '/quotes',
