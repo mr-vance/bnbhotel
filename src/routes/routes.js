@@ -1,10 +1,7 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
 import DashboardLayout from '@/views/Layout/DashboardLayout.vue';
 import AuthLayout from '@/views/Pages/AuthLayout.vue';
-import NotFound from '@/views/NotFoundPage.vue';
 
-Vue.use(VueRouter);
+import NotFound from '@/views/NotFoundPage.vue';
 
 const routes = [
   {
@@ -14,23 +11,31 @@ const routes = [
     children: [
       {
         path: '/dashboard',
-        name: 'Dashboard',
-        component: () => import(/* webpackChunkName: "app" */ '../views/Dashboard.vue')
+        name: 'dashboard',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Dashboard.vue')
       },
       {
-        path: '/clients',
-        name: 'Clients',
-        component: () => import(/* webpackChunkName: "app" */ '../views/Clients.vue')
+        path: '/icons',
+        name: 'icons',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Icons.vue')
       },
       {
-        path: '/quotes',
-        name: 'Quotes',
-        component: () => import(/* webpackChunkName: "app" */ '../views/RegularTables.vue')
+        path: '/profile',
+        name: 'profile',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/UserProfile.vue')
       },
       {
-        path: '/invoices',
-        name: 'Invoices',
-        component: () => import(/* webpackChunkName: "app" */ '../views/RegularTables.vue')
+        path: '/maps',
+        name: 'maps',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/GoogleMaps.vue')
+      },
+      {
+        path: '/tables',
+        name: 'tables',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/RegularTables.vue')
       }
     ]
   },
@@ -41,13 +46,13 @@ const routes = [
     children: [
       {
         path: '/login',
-        name: 'Login',
-        component: () => import(/* webpackChunkName: "auth" */ '../views/Pages/Login.vue')
+        name: 'login',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Login.vue')
       },
       {
         path: '/register',
-        name: 'Register',
-        component: () => import(/* webpackChunkName: "auth" */ '../views/Pages/Register.vue')
+        name: 'register',
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Pages/Register.vue')
       },
       { path: '*', component: NotFound }
     ]

@@ -14,3 +14,35 @@
 @import "../core/utilities/shadows";
 @import "../core/utilities/text";
 @import "../core/utilities/transform";
+
+// Override deprecated text-emphasis-variant classes
+.text-primary {
+  color: $primary !important;
+}
+.text-secondary {
+  color: $secondary !important;
+}
+.text-success {
+  color: $success !important;
+}
+.text-info {
+  color: $info !important;
+}
+.text-warning {
+  color: $warning !important;
+}
+.text-danger {
+  color: $danger !important;
+}
+.text-light {
+  color: $light !important;
+}
+.text-dark {
+  color: $dark !important;
+}
+.text-white {
+  color: $white !important;
+}
+.text-muted {
+  color: $gray-600 !important;
+}

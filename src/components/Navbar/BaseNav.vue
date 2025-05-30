@@ -1,9 +1,7 @@
 <template>
   <b-navbar toggleable :class="classes">
     <div :class="containerClasses">
-      <slot name="brand">
-        <a href="/" class="navbar-brand">YUMOMITSO Invoicing</a>
-      </slot>
+      <slot name="brand"></slot>
 
       <slot name="toggle-button">
         <button
@@ -32,24 +30,7 @@
         :class="menuClasses"
         :visible="show"
         v-click-outside="closeMenu">
-        <b-nav class="flex-column">
-          <b-nav-item to="/dashboard">
-            <i class="ni ni-tv-2"></i>
-            <span>Dashboard</span>
-          </b-nav-item>
-          <b-nav-item to="/clients">
-            <i class="ni ni-single-02"></i>
-            <span>Clients</span>
-          </b-nav-item>
-          <b-nav-item to="/quotes">
-            <i class="ni ni-bullet-list-67"></i>
-            <span>Quotes</span>
-          </b-nav-item>
-          <b-nav-item to="/invoices">
-            <i class="ni ni-collection"></i>
-            <span>Invoices</span>
-          </b-nav-item>
-        </b-nav>
+        <slot :close-menu="closeMenu"></slot>
       </b-collapse>
     </div>
   </b-navbar>
@@ -61,7 +42,8 @@ export default {
     show: {
       type: Boolean,
       default: false,
-      description: 'Whether navbar menu is shown (valid for viewports < specified by `expand` prop)'
+      description:
+        'Whether navbar menu is shown (valid for viewports < specified by `expand` prop)'
     },
     transparent: {
       type: Boolean,
@@ -76,12 +58,14 @@ export default {
     menuClasses: {
       type: [String, Object, Array],
       default: '',
-      description: 'Navbar menu (items) classes. Can be used to align menu items to the right/left'
+      description:
+        'Navbar menu (items) classes. Can be used to align menu items to the right/left'
     },
     containerClasses: {
       type: [String, Object, Array],
       default: 'container',
-      description: 'Container classes. Can be used to control container classes (contains both navbar brand and menu items)'
+      description:
+        'Container classes. Can be used to control container classes (contains both navbar brand and menu items)'
     },
     type: {
       type: String,
@@ -123,7 +107,7 @@ export default {
       return classes;
     },
     hasMenu() {
-      return this.$slots.default || true;
+      return this.$slots.default;
     }
   },
   methods: {
@@ -136,16 +120,4 @@ export default {
   }
 };
 </script>
-<style>
-.navbar-brand {
-  font-weight: bold;
-  color: #fff !important;
-}
-.navbar-custom-collapse .nav-link {
-  color: #fff;
-  padding: 0.75rem 1rem;
-}
-.navbar-custom-collapse .nav-item i {
-  margin-right: 0.5rem;
-}
-</style>
+<style></style>
