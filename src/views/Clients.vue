@@ -30,10 +30,35 @@
           <div v-else-if="error" class="text-center text-danger">
             <h4>Error: {{ error }}</h4>
           </div>
-          <light-table v-else :clients="clients" @edit-client="editClient" @delete-client="confirmDelete" />
+          <light-table
+            v-else
+            :clients="clients"
+            @edit-client="editClient"
+            @view-client="viewClient"
+          />
         </b-col>
       </b-row>
     </b-container>
+
+    <!-- View Modal -->
+    <b-modal v-model="viewModalShow" title="Client Details">
+      <div v-if="selectedClient">
+        <p><strong>First Name:</strong> {{ selectedClient.first_name || 'Not provided' }}</p>
+        <p><strong>Last Name:</strong> {{ selectedClient.last_name || 'Not provided' }}</p>
+        <p><strong>Email:</strong> {{ selectedClient.email_address || 'Not provided' }}</p>
+        <p><strong>Phone:</strong> {{ selectedClient.phone_number || 'Not provided' }}</p>
+        <p><strong>Company Name:</strong> {{ selectedClient.company_name || 'Not provided' }}</p>
+        <p><strong>Company Address:</strong> {{ selectedClient.company_address || 'Not provided' }}</p>
+        <p><strong>Company VAT Number:</strong> {{ selectedClient.company_vat_number || 'Not provided' }}</p>
+        <p><strong>Company Website:</strong> {{ selectedClient.company_website || 'Not provided' }}</p>
+        <p><strong>Created At:</strong> {{ selectedClient.created_at || 'Not provided' }}</p>
+        <p><strong>Last Modified:</strong> {{ selectedClient.last_modified || 'Not provided' }}</p>
+      </div>
+      <template v-slot:modal-footer="{ cancel }">
+        <b-button size="sm" variant="danger" @click="confirmDelete">Delete</b-button>
+        <b-button size="sm" variant="secondary" @click="cancel()">Close</b-button>
+      </template>
+    </b-modal>
 
     <!-- Edit Modal -->
     <b-modal v-model="editModalShow" title="Edit Client" @ok="updateClient" @cancel="resetEditForm">
@@ -50,8 +75,17 @@
         <b-form-group label="Phone" label-for="phone_number">
           <b-form-input v-model="editForm.phone_number" id="phone_number"></b-form-input>
         </b-form-group>
-        <b-form-group label="Company" label-for="company_name">
+        <b-form-group label="Company Name" label-for="company_name">
           <b-form-input v-model="editForm.company_name" id="company_name"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Company Address" label-for="company_address">
+          <b-form-input v-model="editForm.company_address" id="company_address"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Company VAT Number" label-for="company_vat_number">
+          <b-form-input v-model="editForm.company_vat_number" id="company_vat_number"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Company Website" label-for="company_website">
+          <b-form-input v-model="editForm.company_website" id="company_website"></b-form-input>
         </b-form-group>
       </b-form>
       <template v-slot:modal-footer="{ ok, cancel }">
@@ -75,30 +109,51 @@
         <b-form-group label="Phone" label-for="new_phone_number">
           <b-form-input v-model="newClient.phone_number" id="new_phone_number"></b-form-input>
         </b-form-group>
-        <b-form-group label="Company" label-for="new_company_name">
+        <b-form-group label="Company Name" label-for="new_company_name">
           <b-form-input v-model="newClient.company_name" id="new_company_name"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Company Address" label-for="new_company_address">
+          <b-form-input v-model="newClient.company_address" id="new_company_address"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Company VAT Number" label-for="new_company_vat_number">
+          <b-form-input v-model="newClient.company_vat_number" id="new_company_vat_number"></b-form-input>
+        </b-form-group>
+        <b-form-group label="Company Website" label-for="new_company_website">
+          <b-form-input v-model="newClient.company_website" id="new_company_website"></b-form-input>
         </b-form-group>
       </b-form>
     </b-modal>
 
     <!-- Delete Confirmation Modal -->
     <b-modal v-model="deleteModalShow" title="Confirm Delete" @ok="deleteClient">
-      <p>Are you sure you want to delete client ID {{ clientToDelete }}?</p>
+      <p>Are you sure you want to delete this client?</p>
     </b-modal>
 
-    <!-- Toast Notifications -->
-    <b-toast id="success-toast" variant="success" solid>
-      <div class="d-flex">
-        <b-icon icon="check-circle-fill" class="mr-2"></b-icon>
-        <span>Client updated successfully!</span>
+    <!-- Edit Error Modal -->
+    <b-modal v-model="editErrorModalShow" title="Edit Error" ok-only ok-title="OK">
+      <p class="text-danger">{{ editErrorMessage || 'An error occurred while updating the client.' }}</p>
+    </b-modal>
+
+    <!-- Add Error Modal -->
+    <b-modal v-model="addErrorModalShow" title="Add Error" ok-only ok-title="OK">
+      <p class="text-danger">{{ addErrorMessage || 'An error occurred while adding the client.' }}</p>
+    </b-modal>
+
+    <!-- Edit Success Modal -->
+    <b-modal v-model="editSuccessModalShow" title="Update Successful" ok-only ok-title="OK">
+      <div class="d-flex align-items-center">
+        <b-icon icon="check-circle-fill" variant="success" class="mr-2"></b-icon>
+        <p class="mb-0">Client updated successfully!</p>
       </div>
-    </b-toast>
-    <b-toast id="error-toast" variant="danger" solid>
-      <div class="d-flex">
-        <b-icon icon="x-circle-fill" class="mr-2"></b-icon>
-        <span>{{ errorMessage || 'Failed to update client. Please try again.' }}</span>
+    </b-modal>
+
+    <!-- Add Success Modal -->
+    <b-modal v-model="addSuccessModalShow" title="New Client Added" ok-only ok-title="OK">
+      <div class="d-flex align-items-center">
+        <b-icon icon="check-circle-fill" variant="success" class="mr-2"></b-icon>
+        <p class="mb-0">New client added successfully!</p>
       </div>
-    </b-toast>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -114,7 +169,14 @@ export default {
       clients: [],
       loading: false,
       error: null,
-      errorMessage: null,
+      editErrorModalShow: false,
+      editErrorMessage: null,
+      addErrorModalShow: false,
+      addErrorMessage: null,
+      editSuccessModalShow: false,
+      addSuccessModalShow: false,
+      viewModalShow: false,
+      selectedClient: null,
       editModalShow: false,
       editForm: {
         client_id: null,
@@ -122,7 +184,10 @@ export default {
         last_name: '',
         email_address: '',
         phone_number: '',
-        company_name: ''
+        company_name: '',
+        company_address: '',
+        company_vat_number: '',
+        company_website: ''
       },
       showAddModal: false,
       newClient: {
@@ -130,7 +195,10 @@ export default {
         last_name: '',
         email_address: '',
         phone_number: '',
-        company_name: ''
+        company_name: '',
+        company_address: '',
+        company_vat_number: '',
+        company_website: ''
       },
       deleteModalShow: false,
       clientToDelete: null
@@ -154,31 +222,42 @@ export default {
         this.loading = false;
       }
     },
+    viewClient(client) {
+      this.selectedClient = client;
+      this.viewModalShow = true;
+    },
     editClient(client) {
       this.editForm = { ...client };
       this.editModalShow = true;
     },
     async updateClient(bvModalEvt) {
       bvModalEvt.preventDefault();
-      this.errorMessage = null; // Reset error message
+      this.editErrorMessage = null;
+      this.editSuccessModalShow = false;
       try {
         const response = await api.updateClient(this.editForm.client_id, {
           first_name: this.editForm.first_name,
           last_name: this.editForm.last_name,
           email_address: this.editForm.email_address,
           phone_number: this.editForm.phone_number,
-          company_name: this.editForm.company_name
+          company_name: this.editForm.company_name,
+          company_address: this.editForm.company_address,
+          company_vat_number: this.editForm.company_vat_number,
+          company_website: this.editForm.company_website
         });
         if (response.data.message === 'Client updated') {
-          await this.fetchClients(); // Refresh the list
-          this.$bvToast.show('success-toast');
+          await this.fetchClients();
+          this.editSuccessModalShow = true;
+          setTimeout(() => {
+            this.editSuccessModalShow = false;
+          }, 2000);
         } else {
           throw new Error('Unexpected response: ' + JSON.stringify(response.data));
         }
       } catch (error) {
         console.error('Failed to update client:', error);
-        this.errorMessage = error.response?.data?.error || 'Failed to update client. Please check the server or network.';
-        this.$bvToast.show('error-toast');
+        this.editErrorMessage = error.message || 'Failed to update client. Please check the server or network.';
+        this.editErrorModalShow = true;
       }
       this.editModalShow = false;
     },
@@ -189,11 +268,17 @@ export default {
         last_name: '',
         email_address: '',
         phone_number: '',
-        company_name: ''
+        company_name: '',
+        company_address: '',
+        company_vat_number: '',
+        company_website: ''
       };
     },
-    confirmDelete(clientId) {
-      this.clientToDelete = clientId;
+    confirmDelete() {
+      if (this.selectedClient) {
+        this.clientToDelete = this.selectedClient.client_id;
+      }
+      this.viewModalShow = false;
       this.deleteModalShow = true;
     },
     async deleteClient() {
@@ -206,20 +291,38 @@ export default {
         this.error = 'Failed to delete client. Please try again.';
       }
     },
-    showAddModalFunc() {
-      this.showAddModal = true;
-    },
     async addClient(bvModalEvt) {
       bvModalEvt.preventDefault();
+      this.addErrorMessage = null;
+      this.addSuccessModalShow = false;
       try {
         const response = await api.createClient(this.newClient);
-        this.clients.push(response.data); // Assuming API returns the new client
-        this.showAddModal = false;
-        this.resetAddForm();
+        if (response.data.message === 'Client created') {
+          const newClient = {
+            client_id: response.data.client_id,
+            first_name: this.newClient.first_name,
+            last_name: this.newClient.last_name,
+            email_address: this.newClient.email_address,
+            phone_number: this.newClient.phone_number,
+            company_name: this.newClient.company_name,
+            company_address: this.newClient.company_address,
+            company_vat_number: this.newClient.company_vat_number,
+            company_website: this.newClient.company_website
+          };
+          this.clients.push(newClient);
+          this.addSuccessModalShow = true;
+          setTimeout(() => {
+            this.addSuccessModalShow = false;
+          }, 2000);
+        } else {
+          throw new Error('Unexpected response: ' + JSON.stringify(response.data));
+        }
       } catch (error) {
         console.error('Failed to add client:', error);
-        this.error = 'Failed to add client. Please try again.';
+        this.addErrorMessage = error.message || 'Failed to add client. Please check the server or network.';
+        this.addErrorModalShow = true;
       }
+      this.showAddModal = false;
     },
     resetAddForm() {
       this.newClient = {
@@ -227,7 +330,10 @@ export default {
         last_name: '',
         email_address: '',
         phone_number: '',
-        company_name: ''
+        company_name: '',
+        company_address: '',
+        company_vat_number: '',
+        company_website: ''
       };
     }
   }

@@ -1,19 +1,39 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
+// Create Axios instance
 const apiClient = axios.create({
-  baseURL: 'https://www.milkandhoneybnb.com/api',
+  baseURL: '/api', // Relative path for proxy
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
+  },
+  timeout: 10000 // 10 seconds timeout
+});
+
+// Configure axios-retry for automatic retries
+axiosRetry(apiClient, {
+  retries: 3, // Retry up to 3 times
+  retryDelay: (retryCount) => retryCount * 1000, // Exponential backoff: 1s, 2s, 3s
+  retryCondition: (error) => {
+    return axiosRetry.isNetworkOrIdempotentRequestError(error) || (error.response && error.response.status >= 500);
   }
 });
 
-// Handle CORS or API errors
+// Handle CORS or API errors with detailed messages
 apiClient.interceptors.response.use(
   response => response,
   error => {
-    console.error('API Error:', error.response?.data || error.message);
-    return Promise.reject(error);
+    let errorMessage = 'An unexpected error occurred';
+    if (error.response) {
+      errorMessage = error.response.data?.error || `Server error: ${error.response.status}`;
+    } else if (error.request) {
+      errorMessage = 'Network error: Unable to reach the server. Please check your connection or server status.';
+    } else {
+      errorMessage = `Request error: ${error.message}`;
+    }
+    console.error('API Error:', errorMessage, error);
+    return Promise.reject(new Error(errorMessage));
   }
 );
 

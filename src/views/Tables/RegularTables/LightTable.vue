@@ -5,8 +5,12 @@
     </b-card-header>
 
     <div class="table-wrapper">
-      <el-table class="table-responsive table" header-row-class-name="thead-light" :data="clients">
-        <el-table-column label="ID" min-width="100px" prop="client_id"></el-table-column>
+      <el-table
+        class="table-responsive table"
+        header-row-class-name="thead-light"
+        :data="clients"
+        @row-click="handleRowClick"
+      >
         <el-table-column label="Name" min-width="310px">
           <template v-slot="{row}">
             <b-media no-body class="align-items-center">
@@ -29,8 +33,7 @@
         <el-table-column label="Actions" min-width="120px" fixed="right">
           <template v-slot="{row}">
             <div class="d-flex flex-column align-items-center">
-              <b-button size="sm" variant="info" class="mb-1 action-btn" @click="$emit('edit-client', row)">Edit</b-button>
-              <b-button size="sm" variant="danger" class="action-btn" @click="$emit('delete-client', row.client_id)">Delete</b-button>
+              <b-button size="sm" variant="info" class="mb-1 action-btn" @click.stop="$emit('edit-client', row)">Edit</b-button>
             </div>
           </template>
         </el-table-column>
@@ -67,6 +70,14 @@ export default {
     clients(newClients) {
       this.totalItems = newClients.length;
     }
+  },
+  methods: {
+    handleRowClick(row, column, event) {
+      // Prevent click on action buttons from triggering row click
+      if (column.label !== 'Actions') {
+        this.$emit('view-client', row);
+      }
+    }
   }
 };
 </script>
@@ -82,9 +93,9 @@ export default {
 }
 
 .action-btn {
-  width: 80px; /* Fixed width for consistency */
-  font-size: 0.75rem; /* Smaller but readable text */
-  padding: 4px 8px; /* Adjust padding for smaller buttons */
+  width: 80px;
+  font-size: 0.75rem;
+  padding: 4px 8px;
 }
 
 /* Adjust for smaller screens */
